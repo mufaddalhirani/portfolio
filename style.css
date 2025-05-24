@@ -1,0 +1,10 @@
+/* Add any custom global styles here if needed, beyond Tailwind's capabilities */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure smooth scrolling behavior is enabled */
+html {
+  scroll-behavior: smooth;
+}
