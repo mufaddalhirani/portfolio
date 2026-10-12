@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro'
+import { site } from '../lib/url'
+---
+
+<Base title="Privacy & legal notice" current="privacy" description="Privacy statement and legal notice for this website and for Mufaddal Hirani's browser extensions.">
+  <div class="wrap narrow page">
+    <p class="eyebrow">Privacy &amp; legal notice</p>
+    <h1 class="h1">Short, because there’s little to say.</h1>
+
+    <div class="prose">
+      <h2 class="h2">Who runs this site</h2>
+      <p>
+        {site.name}, {site.location}.<br />
+        Email: <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <p>This is a private, non-commercial portfolio. It sells nothing and carries no advertising.</p>
+
+      <h2 class="h2">What this site collects</h2>
+      <p><strong>Nothing.</strong> Specifically:</p>
+      <ul>
+        <li>No cookies, no analytics, no tracking pixels, no social-media embeds.</li>
+        <li>No requests to third parties. Fonts, images and videos are served from this site itself, not from Google Fonts or any CDN.</li>
+        <li>If you switch between light and dark mode, that choice is saved in your own browser’s local storage. It never leaves your device, and you can clear it at any time.</li>
+      </ul>
+
+      <h2 class="h2">Hosting</h2>
+      <p>
+        The site is hosted on GitHub Pages by GitHub, Inc. When you visit, your browser connects to GitHub’s servers,
+        which may log technical data such as your IP address for security and to run the service. I have no access
+        to those logs. See the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub General Privacy Statement</a>.
+      </p>
+
+      <h2 class="h2">If you email me</h2>
+      <p>
+        I use your message and address only to reply, and I don’t share them. Ask me at any time to delete our
+        correspondence and I will.
+      </p>
+
+      <h2 class="h2" id="extensions">Browser extensions</h2>
+      <p>
+        This section is the privacy policy for <strong>YouTube Music – Select All</strong> and
+        <strong>Just This Video — YouTube Focus Mode</strong>.
+      </p>
+      <ul>
+        <li>Neither extension collects, stores, sells or transmits personal data.</li>
+        <li>Neither makes any network request of its own. They only change how YouTube pages look and behave in your browser.</li>
+        <li>YouTube Music – Select All requests no permissions and stores nothing.</li>
+        <li>
+          Just This Video stores only its on/off settings with <code>chrome.storage.sync</code>. If you are signed in to
+          your browser, your browser vendor syncs those settings between your devices.
+        </li>
+      </ul>
+      <p class="muted">Last updated: {site.updated}.</p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: clamp(48px, 8vw, 96px); padding-bottom: 40px; }
+  .page .h1 { font-size: clamp(40px, 6vw, 64px); margin-bottom: 16px; }
+  .prose h2 { font-size: clamp(28px, 3.4vw, 36px); }
+</style>

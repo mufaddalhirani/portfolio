@@ -1,0 +1,177 @@
+---
+import Base from '../layouts/Base.astro'
+import Shot from '../components/Shot.astro'
+import Clip from '../components/Clip.astro'
+import { site, url } from '../lib/url'
+
+const work = [
+  {
+    n: '01',
+    kind: 'Desktop app · 2026',
+    title: 'Lyrigen + Lyric Studio',
+    text: 'A local-first music player for Windows. Lyrics follow the singer syllable by syllable, songs mix into each other on the beat, and a companion Python app times lyrics with AI that runs on your own computer. No account, no telemetry.',
+    facts: [
+      ['Stack', 'Electron, React, TypeScript, Web Audio API · Python, faster-whisper'],
+      ['Role', 'Solo: design, code, releases'],
+      ['Status', 'Version 3, Windows installer on GitHub'],
+    ],
+    shot: { name: 'lyrigen-dj', alt: 'Lyrigen’s DJ screen: two decks with waveforms and BPM readouts, a mixer, the library and a sampler.', height: 900 },
+    href: url('work/lyrigen/'),
+    cta: 'Read the case study',
+  },
+  {
+    n: '02',
+    kind: 'Browser extensions · 2026',
+    title: 'YouTube, on your terms',
+    text: 'Two Manifest V3 extensions. One adds the missing “Select all” button to YouTube Music by driving the page’s own components; the other strips YouTube down to the video you came for. Minimal permissions, no network requests, nothing collected.',
+    facts: [
+      ['Stack', 'JavaScript, Chrome Extensions MV3, DOM'],
+      ['Role', 'Solo'],
+      ['Status', 'Working; store releases in progress'],
+    ],
+    shot: { name: 'focus-after', alt: 'YouTube’s home page with the Just This Video popup open: focus mode on, and the recommendation feed replaced by a single search box.', height: 857 },
+    href: url('work/extensions/'),
+    cta: 'Read the case study',
+  },
+]
+---
+
+<Base current="home">
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <p class="eyebrow">Software developer · Mumbai, India</p>
+    <h1 id="hero-title" class="display">Software,<br /><em>finished.</em></h1>
+    <div class="hero-foot">
+      <p class="lede">
+        I’m <strong>Mufaddal Hirani</strong>, a final-year B.Sc.&nbsp;IT student. I build desktop and web apps
+        end to end, from the audio engine to the installer. Most recently: <strong>Lyrigen</strong>, a Windows
+        music player whose lyrics follow the voice word by word.
+      </p>
+      <div class="hero-side">
+        <p class="status">Graduating mid-2027 · open to internships and junior roles, remote or in Germany</p>
+        <div class="actions">
+          <a class="button primary" href="#work">See the work</a>
+          <a class="button" href={url('cv/Mufaddal-Hirani-CV.pdf')}>Download CV (PDF)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap hero-clip">
+    <Clip
+      name="lyrigen-lyrics-2"
+      label="Screen recording of Lyrigen playing a song: each lyric line lights up word by word in time with the singing, over a background made from the album cover."
+      caption="Lyrigen playing a bilingual Korean–English song. Each word lights up as it is sung. Muted recording."
+    />
+  </div>
+
+  <section id="work" class="section" aria-labelledby="work-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="work-title" class="h2">Selected work</h2>
+        <p class="muted mono">Everything here is my own code.</p>
+      </div>
+
+      <ol class="work">
+        {work.map((w) => (
+          <li class="item">
+            <div class="text">
+              <p class="eyebrow">{w.n} — {w.kind}</p>
+              <h3 class="h2"><a href={w.href}>{w.title}</a></h3>
+              <p class="desc">{w.text}</p>
+              <dl class="facts">
+                {w.facts.map(([k, v]) => (
+                  <div><dt>{k}</dt><dd>{v}</dd></div>
+                ))}
+              </dl>
+              <a class="more" href={w.href}>{w.cta} <span aria-hidden="true">→</span></a>
+            </div>
+            <a class="pic" href={w.href} tabindex="-1" aria-hidden="true">
+              <Shot name={w.shot.name} alt="" height={w.shot.height} sizes="(min-width: 1120px) 620px, 100vw" />
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="bg-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="bg-title" class="h2">Background</h2>
+        <a class="more" href={url('about/')}>More about me <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="bg">
+        <article>
+          <p class="eyebrow">Education</p>
+          <h3 class="h3">B.Sc. Information Technology</h3>
+          <p class="muted">Rizvi College, University of Mumbai. Minor in Statistics. Graduating mid-2027.</p>
+        </article>
+        <article>
+          <p class="eyebrow">Work</p>
+          <h3 class="h3">Level 2 Digital Case Manager</h3>
+          <p class="muted">Concentrix, for Optus (Australia). Escalated home Wi-Fi support, 2025.</p>
+        </article>
+        <article>
+          <p class="eyebrow">Hands-on</p>
+          <h3 class="h3">CCTV &amp; access-control installs</h3>
+          <p class="muted">IP, Wi-Fi and analog cameras, biometric systems and cabling, in my family’s business since 2020.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="now-title">
+    <div class="wrap now">
+      <div>
+        <h2 id="now-title" class="h2">Now</h2>
+        <p class="muted mono">Updated {site.updated}</p>
+      </div>
+      <ul class="now-list">
+        <li>Adding automated tests and continuous integration to Lyrigen.</li>
+        <li>Publishing both extensions on the Firefox, Edge and Chrome stores.</li>
+        <li>Getting a Roblox game I built in Luau, <em>Aura Strike RNG</em>, ready for release.</li>
+        <li>Learning German, and Java with Spring Boot.</li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: clamp(56px, 10vw, 128px); padding-bottom: clamp(40px, 6vw, 64px); }
+  .hero-foot { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: clamp(32px, 5vw, 56px); align-items: end; }
+  .hero-side { display: grid; gap: 20px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  @media (min-width: 900px) { .hero-foot { grid-template-columns: 1.1fr 0.9fr; } }
+
+  .hero-clip { margin-bottom: clamp(24px, 4vw, 48px); }
+
+  .work { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(64px, 9vw, 112px); }
+  .item { display: grid; gap: 28px; align-items: center; }
+  @media (min-width: 900px) {
+    .item { grid-template-columns: 5fr 7fr; gap: 56px; }
+    .item:nth-child(even) { grid-template-columns: 7fr 5fr; }
+    .item:nth-child(even) .text { order: 2; }
+  }
+  .item h3 a { text-decoration: none; }
+  .item h3 a:hover { color: var(--accent); }
+  .desc { color: var(--muted); margin: 16px 0 24px; }
+  .text .facts { grid-template-columns: 1fr; margin-bottom: 24px; }
+  .text .facts > div { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 10px 0; }
+  .text .facts dt { margin: 3px 0 0; }
+  .pic { display: block; transition: transform 0.25s; }
+  .pic:hover { transform: translateY(-3px); }
+
+  .more { font-weight: 500; text-decoration: none; color: var(--accent); }
+  .more:hover { text-decoration: underline; }
+
+  .bg { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .bg article { border-top: 1px solid var(--text); padding-top: 20px; }
+  .bg .h3 { margin-bottom: 8px; }
+  .bg p.muted { margin: 0; }
+
+  .now { display: grid; gap: 24px; }
+  @media (min-width: 900px) { .now { grid-template-columns: 5fr 7fr; gap: 56px; } }
+  .now-list { list-style: none; margin: 0; padding: 0; }
+  .now-list li { padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 18px; }
+  .now-list li:first-child { border-top: 1px solid var(--line); }
+</style>

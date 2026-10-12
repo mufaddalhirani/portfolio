@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro'
+import { url } from '../lib/url'
+---
+
+<Base title="Page not found">
+  <section class="wrap lost">
+    <p class="eyebrow">404</p>
+    <h1 class="display">Off the <em>beat.</em></h1>
+    <p class="lede">This page doesn’t exist, or it moved.</p>
+    <a class="button primary" href={url('')}>Back to the start</a>
+  </section>
+</Base>
+
+<style>
+  .lost { padding-block: clamp(80px, 14vw, 160px); }
+  .lede { margin: 24px 0 32px; }
+</style>

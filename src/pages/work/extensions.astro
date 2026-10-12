@@ -1,0 +1,108 @@
+---
+import Case from '../../layouts/Case.astro'
+import Shot from '../../components/Shot.astro'
+import { url } from '../../lib/url'
+---
+
+<Case
+  title="YouTube, on your terms"
+  kicker="Browser extensions"
+  description="Case study: two Manifest V3 browser extensions. YouTube Music Select All bulk-selects 2,000-song playlists by driving the page's own components, and Just This Video is a focus mode for YouTube."
+  lede="Two small Manifest V3 extensions for Chromium browsers, each fixing one thing that annoyed me every day. Both run only on YouTube's own pages, make no network requests and collect nothing."
+  facts={[
+    ['Role', 'Solo'],
+    ['Timeline', 'September 2026'],
+    ['Stack', 'JavaScript, CSS, Chrome Extensions (Manifest V3)'],
+    ['Browsers', 'Chrome, Edge, Brave, Opera, Vivaldi; Firefox 128+ (Select All)'],
+  ]}
+  links={[
+    { href: 'https://github.com/mufaddalhirani/ytm-select-all', label: 'Select All on GitHub' },
+    { href: 'https://github.com/mufaddalhirani/just-this-video', label: 'Just This Video on GitHub' },
+  ]}
+>
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">YouTube Music – Select All</h2>
+      <div class="prose">
+        <p>
+          YouTube Music can bulk-add, queue or remove songs, but only the ones you tick by hand, one by one.
+          For a 2,000-song playlist that's 2,000 clicks. The extension adds a <strong>Select all</strong> button
+          (and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>) and does the same job in a couple of seconds.
+        </p>
+
+        <div class="problem">
+          <h3 class="h3">Using the page's own machinery instead of fake clicks</h3>
+          <p>
+            The obvious approach, scrolling to load rows and then clicking every checkbox, is slow and fragile.
+            Instead, the content script runs in the page's <code>MAIN</code> world and calls two of YouTube Music's
+            own Polymer component methods. One is the <strong>continuation loader</strong>, which fetches 100 rows
+            at a time; the playlist is fully loaded exactly when no continuation element remains. The other is
+            the <strong>range select behind shift-click</strong>, which selects a whole block of rows in a single store
+            dispatch. Selection takes well under a second regardless of playlist size.
+          </p>
+        </div>
+
+        <div class="problem">
+          <h3 class="h3">Degrading instead of breaking</h3>
+          <p>
+            Range select throws on unavailable (greyed-out) songs, so it's called once per contiguous run of
+            selectable rows, and the skipped songs are counted and reported. If YouTube's internals change, the
+            script falls back to a synthetic shift-click, and then to plain per-row clicks. All selectors sit in one
+            place at the top of the file.
+          </p>
+        </div>
+
+        <div class="problem">
+          <h3 class="h3">Details that matter</h3>
+          <p>
+            YouTube Music enforces <strong>Trusted Types</strong>, so all UI is built with DOM APIs (no
+            <code>innerHTML</code>). Work is paced with timers rather than <code>requestAnimationFrame</code>,
+            which stalls in background tabs, so switching tabs mid-run is safe. A full-screen overlay with a
+            progress bar stops stray clicks while it works, and <kbd>Esc</kbd> cancels. The extension asks for
+            <strong>no permissions at all</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">Just This Video</h2>
+      <div class="prose">
+        <p>
+          A focus mode for YouTube: open a video, watch that video, leave. It hides the recommendation sidebar,
+          end-of-video cards and the end-screen wall, and replaces the algorithmic home feed with a plain search
+          box. Your own playlist queue stays, because that isn't a recommendation.
+        </p>
+        <p>
+          It also removes Shorts everywhere: the shelf, the navigation entry and the channel tab. Any
+          <code>/shorts/&lt;id&gt;</code> link, including ones followed inside YouTube's single-page navigation,
+          redirects to the normal watch page. Settings live in <code>chrome.storage.sync</code> and apply
+          instantly, with no reload. The only permission it needs is <code>storage</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap media pair">
+    <Shot name="focus-before" alt="YouTube home page with the extension's focus mode off: a grid of recommended videos." height={857} caption="Focus mode off: the usual recommendation grid." sizes="(min-width: 760px) 520px, 100vw" />
+    <Shot name="focus-after" alt="The same page with focus mode on: the feed is replaced by one search box reading ‘Search for what you came to watch’." height={857} caption="Focus mode on: one search box, nothing else." sizes="(min-width: 760px) 520px, 100vw" />
+  </div>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">What's next</h2>
+      <div class="prose">
+        <ul>
+          <li>Publish both on the Firefox Add-ons, Microsoft Edge Add-ons and Chrome Web Store listings, so people don't need developer mode.</li>
+          <li>Add automated tests against saved copies of the YouTube pages, so a markup change is caught before users notice.</li>
+        </ul>
+        <p class="muted">
+          Both extensions collect no data. The privacy statement the stores require is on
+          <a href={url('privacy/#extensions')}>this site's privacy page</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Case>

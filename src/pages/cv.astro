@@ -1,0 +1,230 @@
+---
+import Base from '../layouts/Base.astro'
+import { site, url } from '../lib/url'
+
+const portfolio = new URL(url(''), Astro.site).href.replace(/^https:\/\//, '').replace(/\/$/, '')
+
+type Row = { when: string; title: string; org?: string; meta?: string; points?: string[] }
+
+const projects: Row[] = [
+  {
+    when: '2026 – today',
+    title: 'Lyrigen: local-first music player for Windows',
+    meta: 'Electron · React · TypeScript · Vite · Web Audio API',
+    points: [
+      'Designed, built and released it solo. Public Windows installer and portable builds via electron-builder.',
+      'Wrote tempo and beat detection (autocorrelation + comb search), a phase-locked, beat-matched DJ mixer, and a WSOLA pitch shifter as an AudioWorklet.',
+      'Combined five lyric sources and ranked them by timing precision. Playwright-driven smoke and visual checks.',
+    ],
+  },
+  {
+    when: '2026 – today',
+    title: 'Lyric Studio: on-device AI lyric alignment',
+    meta: 'Python · faster-whisper · Meta MMS forced aligner · CustomTkinter',
+    points: [
+      'Word- and syllable-level timing for any song. Keeps human-made timing, checks it against the recording and adds syllables.',
+      'Syllabification for English, Indic scripts and Japanese. A GUI plus a CLI that streams JSON events, which Lyrigen uses as its engine.',
+    ],
+  },
+  {
+    when: '09/2026',
+    title: 'Browser extensions for YouTube (Manifest V3)',
+    meta: 'JavaScript · Chrome Extensions API',
+    points: [
+      'YouTube Music Select All: bulk-selects 2,000-song playlists in seconds by calling the page’s own components. No permissions, Trusted Types compliant.',
+      'Just This Video: a focus mode that hides recommendations and Shorts, with settings synced through chrome.storage.',
+    ],
+  },
+]
+
+const experience: Row[] = [
+  {
+    when: '06/2025 – 09/2025',
+    title: 'Level 2 Digital Case Manager',
+    org: 'Concentrix, Mumbai · Optus account (Australian telecom)',
+    points: [
+      'After two months of training, handled escalated home Wi-Fi cases that Level 1 support could not resolve.',
+      'Outbound calls, step-by-step troubleshooting and follow-ups until resolution. Resolved 50–60 escalated cases in the first month.',
+      'Left to concentrate on my degree.',
+    ],
+  },
+  {
+    when: 'since 2020',
+    title: 'Practical experience: security-systems installation',
+    org: 'Family business, informal and alongside school and studies',
+    points: [
+      'Installed IP, Wi-Fi and analog CCTV and biometric attendance and access systems. Low-voltage cabling, recorder and viewing-software setup.',
+      'Sites included a school, a construction site, shops, and residential and commercial buildings. Handed over and explained systems to customers.',
+    ],
+  },
+]
+
+const education: Row[] = [
+  {
+    when: '2023 – 2027',
+    title: 'B.Sc. Information Technology (expected mid-2027)',
+    org: 'Rizvi College of Arts, Science and Commerce, University of Mumbai',
+    points: [
+      'Minor in Statistics. Revised NEP 2020 curriculum including AI modules.',
+      'Repeated second year (2025–26). All outstanding exams cleared in 2026.',
+    ],
+  },
+]
+
+const skills: Array<[string, string]> = [
+  ['Languages', 'TypeScript, JavaScript, Python, HTML, CSS · Luau · coursework: C, C#, SQL, R'],
+  ['Frameworks & tools', 'React, Electron, Node.js, Vite, Web Audio API, Chrome Extensions (MV3), Playwright, Git, GitHub'],
+  ['AI & audio', 'faster-whisper, forced alignment (Meta MMS), beat detection, DSP basics, CUDA setup'],
+  ['Hardware & networks', 'CCTV (IP, Wi-Fi, analog), biometric access, cabling, home Wi-Fi troubleshooting'],
+  ['Learning now', 'Java and Spring Boot, automated testing and CI, German'],
+]
+---
+
+<Base title="CV" current="cv" description="CV of Mufaddal Hirani: final-year B.Sc. IT student and software developer. Projects, experience, education and skills.">
+  <div class="wrap cv">
+    <div class="tools no-print">
+      <p class="eyebrow">Curriculum vitae · updated {site.updated}</p>
+      <a class="button primary" href={url('cv/Mufaddal-Hirani-CV.pdf')} download>Download PDF</a>
+    </div>
+
+    <header class="cv-head">
+      <div>
+        <h1 class="h1">{site.name}</h1>
+        <p class="role">Software developer · final-year B.Sc. IT student</p>
+        <ul class="contact">
+          <li>{site.location}</li>
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><a href={url('')}>{portfolio}</a></li>
+          <li><a href={site.github}>github.com/mufaddalhirani</a></li>
+          <li><a href={site.linkedin}>linkedin.com/in/mufaddal-hirani</a></li>
+        </ul>
+      </div>
+      <img class="photo" src={url('media/portrait-400.webp')} width="400" height="533" alt="Portrait of Mufaddal Hirani." />
+    </header>
+
+    <section class="block">
+      <h2 class="label">Profile</h2>
+      <p class="summary">
+        Final-year IT student who builds and ships desktop and web software end to end. My main project, Lyrigen, is a
+        local-first Windows music player (Electron, React, TypeScript, Web Audio) with an on-device AI lyric aligner in
+        Python. Hands-on background in CCTV and access-control installation, and customer-facing technical support
+        experience. Looking for an internship or junior developer role, remote or in Germany, from 2027.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2 class="label">Projects</h2>
+      {projects.map((r) => (
+        <div class="row">
+          <p class="when">{r.when}</p>
+          <div>
+            <h3 class="what">{r.title}</h3>
+            {r.meta && <p class="meta">{r.meta}</p>}
+            <ul>{r.points?.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section class="block">
+      <h2 class="label">Experience</h2>
+      {experience.map((r) => (
+        <div class="row">
+          <p class="when">{r.when}</p>
+          <div>
+            <h3 class="what">{r.title}</h3>
+            {r.org && <p class="meta">{r.org}</p>}
+            <ul>{r.points?.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section class="block">
+      <h2 class="label">Education</h2>
+      {education.map((r) => (
+        <div class="row">
+          <p class="when">{r.when}</p>
+          <div>
+            <h3 class="what">{r.title}</h3>
+            {r.org && <p class="meta">{r.org}</p>}
+            <ul>{r.points?.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section class="block">
+      <h2 class="label">Skills</h2>
+      {skills.map(([k, v]) => (
+        <div class="row">
+          <p class="when">{k}</p>
+          <p class="plain">{v}</p>
+        </div>
+      ))}
+    </section>
+
+    <section class="block">
+      <h2 class="label">Languages</h2>
+      <div class="row"><p class="when">English</p><p class="plain">Fluent (spoken and written)</p></div>
+      <div class="row"><p class="when">Hindi, Urdu, Gujarati, Marathi</p><p class="plain">Fluent (spoken)</p></div>
+      <div class="row"><p class="when">Arabic</p><p class="plain">Reading</p></div>
+      <div class="row"><p class="when">German</p><p class="plain">Beginner, currently learning</p></div>
+    </section>
+
+    <section class="block">
+      <h2 class="label">Interests</h2>
+      <p class="plain">Electric and acoustic guitar, music production, treks.</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .cv { max-width: 900px; padding-top: clamp(40px, 6vw, 72px); }
+  .tools { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+  .tools .eyebrow { margin: 0; }
+
+  .cv-head { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--text); }
+  .role { font-size: 19px; margin: 10px 0 16px; color: var(--muted); }
+  .contact { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 15px; }
+  .contact a { text-decoration: none; }
+  .contact a:hover { text-decoration: underline; }
+  .photo { width: 120px; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); flex-shrink: 0; }
+  @media (max-width: 560px) { .cv-head { flex-direction: column-reverse; } .photo { width: 96px; height: 128px; } }
+
+  .block { padding-top: 28px; }
+  .label {
+    font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  .summary { margin: 0; max-width: 72ch; }
+  .row { display: grid; grid-template-columns: 1fr; gap: 2px 24px; padding: 10px 0; border-top: 1px solid var(--line); }
+  @media (min-width: 640px) { .row { grid-template-columns: 190px 1fr; } }
+  .when { margin: 2px 0 0; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .what { font-size: 16.5px; font-weight: 600; line-height: 1.4; }
+  .meta { margin: 2px 0 6px; font-size: 14.5px; color: var(--muted); }
+  .plain { margin: 0; }
+  .row ul { margin: 6px 0 4px; padding-left: 1.1em; }
+  .row li { margin-bottom: 4px; font-size: 15.5px; }
+
+  @media print {
+    @page { size: A4; margin: 13mm 15mm; }
+    .cv { padding: 0; max-width: none; }
+    .cv-head { border-color: #000; padding-bottom: 14px; }
+    .h1 { font-size: 30pt; }
+    .role { font-size: 12pt; margin: 4px 0 8px; color: #333; }
+    .contact { font-size: 9.5pt; }
+    .contact a { color: #000; }
+    .photo { width: 30mm; height: 40mm; border: 0; }
+    .block { padding-top: 12px; break-inside: auto; }
+    .label { color: #8a3f06; margin-bottom: 6px; font-size: 9pt; letter-spacing: 0.04em; }
+    .summary { font-size: 10pt; }
+    .row { grid-template-columns: 38mm 1fr; padding: 5px 0; break-inside: avoid; border-color: #ddd; }
+    .when, .meta { color: #444; }
+    .when { font-size: 8.5pt; }
+    .what { font-size: 10.5pt; }
+    .meta { font-size: 9pt; margin: 1px 0 3px; }
+    .row li, .plain { font-size: 9.5pt; }
+    .row li { margin-bottom: 2px; }
+  }
+</style>

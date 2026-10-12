@@ -1,0 +1,178 @@
+---
+import Case from '../../layouts/Case.astro'
+import Shot from '../../components/Shot.astro'
+import Clip from '../../components/Clip.astro'
+---
+
+<Case
+  title="Lyrigen + Lyric Studio"
+  kicker="Desktop app"
+  description="Case study: Lyrigen, a local-first Windows music player with word- and syllable-synced lyrics, beat-matched DJ transitions and on-device AI lyric alignment."
+  lede="A free music player for the songs already on your computer. Lyrics follow the voice word by word, songs flow into each other like a DJ set, and nothing you play ever leaves the machine. Lyric Studio, its companion app, times any song's lyrics with AI that runs locally."
+  facts={[
+    ['Role', 'Solo: design, code, testing, releases'],
+    ['Timeline', '2026 – ongoing'],
+    ['Stack', 'Electron, React, TypeScript, Vite, Web Audio API'],
+    ['AI engine', 'Python, faster-whisper, Meta MMS aligner'],
+  ]}
+  links={[
+    { href: 'https://github.com/mufaddalhirani/lyrigen', label: 'Code on GitHub' },
+    { href: 'https://github.com/mufaddalhirani/lyrigen/releases/latest', label: 'Download for Windows' },
+    { href: 'https://github.com/mufaddalhirani/lyrics-studio', label: 'Lyric Studio' },
+  ]}
+>
+  <div class="wrap media">
+    <Clip
+      name="lyrigen-lyrics-1"
+      label="Screen recording of Lyrigen playing a song. The current lyric line is highlighted word by word over a moving background made from the album art."
+      caption="Word-synced lyrics in the player. The background is generated from the album cover. Muted recording."
+    />
+  </div>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">Why I built it</h2>
+      <div class="prose">
+        <p>
+          I keep a large local music library, and I play guitar and produce music. Streaming apps have great
+          synced lyrics but only for their own catalogue. Local players have your files but treat lyrics as an
+          afterthought. I wanted both: <strong>my own files, with lyrics as good as the best streaming apps</strong>,
+          plus the smooth, beat-matched transitions a DJ would make between songs.
+        </p>
+        <p>
+          The constraints were clear from the start: it had to run on an ordinary Windows PC, open a library of
+          thousands of songs instantly, and work offline, with no account and no data leaving the computer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">How it fits together</h2>
+      <div class="prose">
+        <p>
+          Lyrigen is an Electron app. The <strong>main process</strong> (Node.js) owns the file system:
+          scanning the library, reading and writing tags, fetching lyrics from five free sources, and running
+          downloads. The <strong>renderer</strong> is a React and TypeScript UI with its own audio engine built on
+          the Web Audio API. AI lyric timing runs in a separate <strong>Python process</strong>, so a long job never
+          blocks the interface.
+        </p>
+        <pre class="diagram" role="img" aria-label="Architecture: the React renderer with its Web Audio engine talks to the Electron main process over a preload bridge. The main process reads the music library, fetches lyrics from online sources, and starts Lyric Studio as a Python child process that streams JSON progress events back.">┌──────────────── Renderer (React + TypeScript) ────────────────┐
+│  Player · Library · DJ · Lyrics Finder · Sound Lab            │
+│  Web Audio: beat analysis · DJ mix bus · EQ · WSOLA worklet   │
+└───────────────────────────┬───────────────────────────────────┘
+                            │ typed IPC (preload bridge)
+┌───────────────────────────┴───────────────────────────────────┐
+│  Electron main process (Node.js)                              │
+│  library scan · tags (ID3/Vorbis) · lyric sources · downloads │
+└──────────┬───────────────────────────────────┬────────────────┘
+           │ files                             │ child process, JSON lines
+   ┌───────┴────────┐               ┌──────────┴───────────────┐
+   │ Music library  │               │ Lyric Studio (Python)    │
+   │ + .ttml / .lrc │               │ faster-whisper, MMS      │
+   └────────────────┘               └──────────────────────────┘</pre>
+        <p>
+          Lyric Studio also ships on its own, with a desktop GUI and a command line. Both apps write the same
+          TTML and LRC files, so a song synced in one plays word by word in the other.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap media pair">
+    <Shot name="lyrigen-home" alt="Lyrigen home screen: the last-played song set large in a serif typeface, library statistics (5,295 songs, 3,029 albums, 318 hours), and a ‘Jump back in’ list." height={897} caption="Home, on my own library of 5,295 songs." sizes="(min-width: 760px) 520px, 100vw" />
+    <Shot name="lyrigen-dj" alt="The DJ screen with two decks, waveforms, BPM readouts, a mixer, the library and an eight-pad sampler." height={900} caption="DJ mode: two decks that find their own tempo and beat grid." sizes="(min-width: 760px) 520px, 100vw" />
+  </div>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">Four hard problems</h2>
+      <div class="prose">
+        <div class="problem">
+          <h3 class="h3">1. Finding the beat, fast and without libraries</h3>
+          <p>
+            Beat-matched transitions and beat-reactive visuals need each song's exact tempo and the position of
+            its first beat. Lyrigen decodes the file once at 11&nbsp;kHz (a quarter of CD rate, enough for kick
+            drums), builds an onset curve at 100 frames a second from bass and full-band energy, and finds the
+            repeating period with <strong>autocorrelation</strong> between 70 and 180&nbsp;BPM. The search leans towards
+            the 90–140&nbsp;BPM range, so a 120&nbsp;BPM song isn't reported as 60 or 240. A <strong>comb search</strong>
+            in 0.02&nbsp;BPM steps across every phase then finds the grid whose beats land on the most onsets. That
+            gives the precise tempo and the first beat in well under a second. The result is cached per song.
+          </p>
+        </div>
+        <div class="problem">
+          <h3 class="h3">2. Mixing on the beat without decoding whole songs</h3>
+          <p>
+            Decoding every song into memory would give sample-exact starts, but costs about 110&nbsp;MB per
+            five-minute song. Instead, songs keep streaming from ordinary media elements, and precision comes from
+            two places. Every effect (EQ kills, filter sweeps, echo, reverb) is scheduled on the
+            <code>AudioContext</code> clock, so it lands exactly on the beat grid. The incoming song starts a moment
+            early and silent, and a <strong>phase-locked loop</strong> pulls it onto the outgoing song's beat: one jump
+            while silent, then playback-rate nudges of at most 3%. Tempos are matched with pitch-preserving
+            time-stretch within ±8%. Beyond that, Lyrigen picks a transition that doesn't need beatmatching.
+          </p>
+        </div>
+        <div class="problem">
+          <h3 class="h3">3. Changing pitch without changing tempo</h3>
+          <p>
+            The browser can only change pitch and tempo together. The genre modes needed them separate (lo-fi
+            wants a large tempo drop with a smaller pitch drop, so vocals stay clear), so I wrote a
+            <strong>WSOLA pitch shifter</strong> as an <code>AudioWorklet</code>: 1,024-sample Hann-windowed grains at 50%
+            overlap, with a cross-correlation search that picks the splice point whose waveform best matches
+            what was already written, so there are no clicks. Ratios within a cent of 1.0 bypass it entirely.
+          </p>
+        </div>
+        <div class="problem">
+          <h3 class="h3">4. Lyrics that are timed well, from anywhere</h3>
+          <p>
+            Lyrigen asks five free lyric sources behind one candidate model and ranks results by how finely they
+            are timed: syllable, then word, then line, then plain text. When no good timing exists, Lyric Studio
+            makes it. It aligns the known words to the recording with faster-whisper and Meta's MMS forced
+            aligner (1,130 languages). It keeps any timing a person already made, checks it against this
+            particular recording, and only adds syllables. Syllables are split by spoken syllable in English,
+            by akshara in Hindi and other Indic scripts, and by mora in Japanese. <strong>The AI decides timing,
+            never spelling</strong>: the output always contains the exact lyrics.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap media pair">
+    <Shot name="lyrigen-ai-sync" alt="The ‘Sync with AI’ panel aligning ABBA's ‘The Winner Takes It All’ at syllable level with the large-v3 model on the GPU, keeping the human-made word timing for 61 lines." height={897} caption="AI sync keeps human-made timing for all 61 lines and only adds syllables." sizes="(min-width: 760px) 520px, 100vw" />
+    <Shot name="lyrigen-lyrics-finder" alt="Lyrics Finder statistics: 5,282 tracks, 4,169 with lyrics, 685 word-synced, 1,113 missing, above the AI sync form." height={900} caption="Lyrics Finder shows what's missing and fills it." sizes="(min-width: 760px) 520px, 100vw" />
+  </div>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">Engineering practice</h2>
+      <div class="prose">
+        <ul>
+          <li><strong>Typed end to end</strong>: TypeScript in the UI and the Electron main process, with a typed bridge between them.</li>
+          <li><strong>Automated checks</strong> driven by Playwright: startup, layout, DJ, lyric-gap and visual-mode smoke tests, plus scripted screenshots for the README.</li>
+          <li><strong>Releases</strong>: versioning and release scripts, with an NSIS installer and a single-file portable build from electron-builder.</li>
+          <li><strong>Privacy by design</strong>: no account, no telemetry. Lyric lookups send only the song's title, artist or video ID, and the AI runs locally (on the GPU when there is one).</li>
+          <li><strong>Performance</strong>: the library opens instantly with thousands of songs, and beat analysis takes under a second per song.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter wrap">
+    <div class="chapter-grid">
+      <h2 class="h2">What's next</h2>
+      <div class="prose">
+        <ul>
+          <li>Unit tests for the beat analysis, tempo matching and TTML/LRC parsing, running in GitHub Actions on every push.</li>
+          <li>Automated Windows builds in CI and code signing, so Windows stops warning on first launch.</li>
+          <li>A small server where people can share lyrics they synced with AI, so nobody has to sync the same song twice.</li>
+        </ul>
+        <p class="muted">
+          What I learned: the hard part of audio software isn't the maths, it's timing. I learned to separate
+          what has to be sample-exact from what only has to sound right, and to build for the second without giving up the first.
+        </p>
+      </div>
+    </div>
+  </section>
+</Case>

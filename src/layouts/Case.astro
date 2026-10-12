@@ -1,0 +1,61 @@
+---
+import Base from './Base.astro'
+import { url } from '../lib/url'
+
+interface Props {
+  title: string
+  kicker: string
+  lede: string
+  description: string
+  facts: Array<[string, string]>
+  links: Array<{ href: string; label: string }>
+}
+
+const { title, kicker, lede, description, facts, links } = Astro.props
+---
+
+<Base title={title} description={description} current="work">
+  <article class="case">
+    <header class="wrap head">
+      <p class="eyebrow"><a href={url('#work')}>Work</a> / {kicker}</p>
+      <h1 class="h1">{title}</h1>
+      <p class="lede">{lede}</p>
+      <dl class="facts">
+        {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+      <div class="links">
+        {links.map((l, i) => <a class={i === 0 ? 'button primary' : 'button'} href={l.href}>{l.label}</a>)}
+      </div>
+    </header>
+    <div class="body">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .head { padding-top: clamp(48px, 8vw, 96px); padding-bottom: 40px; }
+  .head .eyebrow a { text-decoration: none; }
+  .head .eyebrow a:hover { color: var(--text); }
+  .head .lede { margin: 24px 0 40px; max-width: 60ch; }
+  .links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+
+  .body :global(.chapter) { padding-block: clamp(48px, 7vw, 88px); border-top: 1px solid var(--line); }
+  .body :global(.chapter-grid) { display: grid; gap: 24px; }
+  .body :global(.chapter-grid > *) { min-width: 0; }
+  @media (min-width: 900px) {
+    .body :global(.chapter-grid) { grid-template-columns: 4fr 8fr; gap: 56px; }
+    .body :global(.chapter-grid > h2) { position: sticky; top: 92px; align-self: start; }
+  }
+  .body :global(.media) { margin-block: 8px clamp(48px, 7vw, 80px); }
+  .body :global(.pair) { display: grid; gap: 20px; }
+  @media (min-width: 760px) { .body :global(.pair) { grid-template-columns: 1fr 1fr; } }
+  .body :global(.problem) { border-left: 2px solid var(--accent); padding-left: 20px; margin: 0 0 40px; }
+  .body :global(.problem h3) { margin-bottom: 10px; }
+  .body :global(.problem p:last-child) { margin-bottom: 0; }
+  .body :global(.diagram) {
+    font-family: var(--mono); font-size: 13px; line-height: 1.55; color: var(--text);
+    background: var(--sunken); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; overflow-x: auto; margin: 0 0 1.4em; white-space: pre;
+  }
+</style>

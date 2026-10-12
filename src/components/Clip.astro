@@ -1,0 +1,44 @@
+---
+import { url } from '../lib/url'
+
+interface Props {
+  name: string
+  label: string
+  caption?: string
+}
+
+const { name, label, caption } = Astro.props
+---
+
+<figure class="figure clip">
+  <video
+    src={url(`media/${name}.mp4`)}
+    poster={url(`media/${name}-poster.webp`)}
+    width="1280"
+    height="720"
+    muted
+    loop
+    playsinline
+    controls
+    preload="none"
+    aria-label={label}
+  ></video>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+  // Play silent demo clips only while they are on screen, and never for
+  // people who asked their system for reduced motion.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)')
+  const videos = document.querySelectorAll<HTMLVideoElement>('.clip video')
+  if (!reduce.matches && 'IntersectionObserver' in window) {
+    const seen = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement
+        if (e.isIntersecting) v.play().catch(() => {})
+        else v.pause()
+      }
+    }, { threshold: 0.4 })
+    videos.forEach((v) => seen.observe(v))
+  }
+</script>
